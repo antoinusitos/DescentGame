@@ -4,10 +4,30 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour 
 {
+    //
+    // Singleton
+    //
+
+    private static GameManager _instance;
+
+    public static GameManager GetInstance()
+    {
+        return _instance;
+    }
+
+    void Awake()
+    {
+        _instance = this;
+    }
+
+    //
+    // End Singleton
+    //
+
     public GameObject playerPrefab;
 
     private List<GameObject> _allPlayers;
-
+    private GameObject _playerTurn;
 
     //
     // DEBUG
@@ -60,6 +80,11 @@ public class GameManager : MonoBehaviour
         {
             Debug.Log("red dice");
             DiceManager.GetInstance().Play(Dice.DiceType.red);
+        }
+
+        if (Input.GetKeyDown(KeyCode.G))
+        {
+            _allPlayers[0].GetComponent<Player>().SetSquarePos(BoardManager.GetInstance().GetFirstSquare());
         }
     }
 

@@ -16,6 +16,8 @@ public class Player : MonoBehaviour
 
     protected string _name = "UNKNONW";
 
+    protected Square _currentSquare;
+
     void Start()
     {
         _cards = new List<Card>();
@@ -57,5 +59,11 @@ public class Player : MonoBehaviour
     public void AddCard(Card newCard)
     {
         _cards.Add(newCard);
+    }
+
+    public void SetSquarePos(Square newPos)
+    {
+        _currentSquare = newPos;
+        transform.position = _currentSquare.transform.position;
     }
 }
