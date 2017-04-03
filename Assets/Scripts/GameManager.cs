@@ -26,8 +26,8 @@ public class GameManager : MonoBehaviour
 
     public GameObject playerPrefab;
 
-    private List<GameObject> _allPlayers;
-    private GameObject _playerTurn;
+    private List<Player> _allPlayers;
+    private Player _playerTurn;
 
     //
     // DEBUG
@@ -44,26 +44,66 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        _allPlayers = new List<GameObject>();
+        _allPlayers = new List<Player>();
+    }
+
+    public void EndPlayerTurn()
+    {
+        _playerTurn.EndPlayerTurn();
+        foreach (Player p in _allPlayers)
+        {
+            if (p.GetHero().CheckHaveActions())
+            {
+                return;
+            }
+        }
+
+        StartCoroutine(EndGameTurn());
+    }
+
+    IEnumerator EndGameTurn()
+    {
+        // do something at the end of the turn
+        yield return new WaitForSeconds(1.0f);
+        BeginGameTurn();
+    }
+
+    public void BeginGameTurn()
+    {
+        foreach (Player p in _allPlayers)
+        {
+            p.BeginGameTurn();
+        }
+    }
+
+    public void DebugTakeTurn()
+    {
+        _allPlayers[0].BeginPlayerTurn();
+        _playerTurn = _allPlayers[0];
+    }
+
+    IEnumerator DebugCreatePlayer()
+    {
+        _allPlayers.Add(Instantiate(playerPrefab).GetComponent<Player>());
+        yield return new WaitForEndOfFrame();
+        _allPlayers[0].InitPlayer("Antoine");
+        GameObject go = Instantiate(debugCard);
+        go.GetComponent<Hero>().InitHero();
+        go.GetComponent<Hero>().SetOwner(_allPlayers[0]);
+        _allPlayers[0].AddCard(go.GetComponent<Card>());
+        _allPlayers[0].SetHeroCard(go.GetComponent<Hero>());
     }
 
     void Update()
     {
         if(Input.GetKeyDown(KeyCode.P))
         {
-            _allPlayers.Add(Instantiate(playerPrefab));
-        }
-
-        if (Input.GetKeyDown(KeyCode.L))
-        {
-            GameObject go = Instantiate(debugCard);
-            go.GetComponent<Card>().SetOwner(_allPlayers[0].GetComponent<Player>());
-            _allPlayers[0].GetComponent<Player>().AddCard(go.GetComponent<Card>());
+            StartCoroutine(DebugCreatePlayer());
         }
 
         if (Input.GetKeyDown(KeyCode.K))
         {
-            _allPlayers[0].GetComponent<Player>().DebugAllCards();
+            _allPlayers[0].DebugAllCards();
         }
 
         if (Input.GetKeyDown(KeyCode.J))
@@ -84,7 +124,18 @@ public class GameManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.G))
         {
-            _allPlayers[0].GetComponent<Player>().SetSquarePos(BoardManager.GetInstance().GetFirstSquare());
+            _allPlayers[0].SetSquarePos(BoardManager.GetInstance().GetFirstSquare());
+        }
+
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            _allPlayers[0].BeginGameTurn();
+        }
+
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            _playerTurn = _allPlayers[0];
+            _allPlayers[0].BeginPlayerTurn();
         }
     }
 

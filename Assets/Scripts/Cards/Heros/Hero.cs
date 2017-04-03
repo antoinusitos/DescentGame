@@ -75,23 +75,28 @@ public class Hero : Card
 
 	void Start () 
     {
+        
+	}
+
+    public virtual void InitHero()
+    {
         _cardType = CardType.hero;
         _owner = null;
         _name = "UNKNOWN";
 
-        _health = 6;
+        _health = -1;
         _currentHealth = _health;
-        _speed = 4;
+        _speed = -1;
         _currentSpeed = _speed;
-        _stamina = 4;
+        _stamina = -1;
         _currentStamina = _stamina;
-        _defense = 2;
+        _defense = -1;
         _currentDefense = _defense;
 
-        _might = 1;
-        _knowledge = 1;
-        _willpower = 1;
-        _awareness = 1;
+        _might = -1;
+        _knowledge = -1;
+        _willpower = -1;
+        _awareness = -1;
 
         _currentArchetype = Archetype.none;
         _currentAbility = Ability.none;
@@ -104,7 +109,12 @@ public class Hero : Card
         leftGlove = false;
         rightGlove = false;
         armor = false;
-	}
+    }
+
+    public void ResetHero()
+    {
+        _actionRemaining = actionPerTurn;
+    }
 
     public void TakeDamage(int amount)
     {
@@ -129,10 +139,22 @@ public class Hero : Card
         _actionRemaining -= 1;
     }
 
-    public void Move(Vector3 pos)
+    public bool CheckHaveActions()
     {
-        transform.position = pos;
-
-        // @Upgrade : remove the speed amount
+        if (_actionRemaining <= 0)
+            return false;
+        return true;
     }
+
+    public string GetName(){ return _name;}
+
+    public int GetHealth() { return _currentHealth; }
+    public int GetSpeed() { return _currentSpeed; }
+    public int GetStamina() { return _currentStamina; }
+    public int GetDefense() { return _currentDefense; }
+
+    public int GetMight() { return _might; }
+    public int GetKnowledge() { return _knowledge; }
+    public int GetWillpower() { return _willpower; }
+    public int GetAwareness() { return _awareness; }
 }

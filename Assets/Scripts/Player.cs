@@ -18,10 +18,17 @@ public class Player : MonoBehaviour
 
     protected Square _currentSquare;
 
+    protected int _numberAction = 2;
+
+    public Material selected;
+    public Material unselected;
+
+    public GameObject playerInfoPrefab;
+    protected InfoCard _infoCard;
+
     void Start()
     {
-        _cards = new List<Card>();
-        _currentHero = null;
+        //_currentHero = null;
         _gold = 0;
         _currentPawn = null;
         _playerTurn = false;
@@ -30,8 +37,30 @@ public class Player : MonoBehaviour
 
     public void InitPlayer(string newName)
     {
+        _cards = new List<Card>();
         _name = newName;
         _gold = 250;
+        Debug.Log("name:" + _name);
+        Debug.Log("gold :" + _gold);
+    }
+
+    public void SetHeroCard(Hero newHero)
+    {
+        _currentHero = newHero;
+        GameObject go = Instantiate(playerInfoPrefab);
+        _infoCard = go.GetComponent<InfoCard>();
+
+        _infoCard.heroName.text = _currentHero.GetName();
+
+        _infoCard.heroHealth.text = "Health : " + _currentHero.GetHealth().ToString();
+        _infoCard.heroSpeed.text = "Speed : " + _currentHero.GetSpeed().ToString();
+        _infoCard.heroStamina.text = "Stamina : " + _currentHero.GetStamina().ToString();
+        _infoCard.heroDefense.text = "Defense : " + _currentHero.GetDefense().ToString();
+
+        _infoCard.heroMight.text = "Might : " + _currentHero.GetMight().ToString();
+        _infoCard.heroWillpower.text = "Willpower : " + _currentHero.GetWillpower().ToString();
+        _infoCard.heroKnowledge.text = "Knowledge : " + _currentHero.GetKnowledge().ToString();
+        _infoCard.heroAwareness.text = "Awareness : " + _currentHero.GetAwareness().ToString();
     }
 
     public void DebugAllCards()
@@ -46,16 +75,6 @@ public class Player : MonoBehaviour
         Debug.Log("end of current hand");
     }
 
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.M))
-        {
-            InitPlayer("Antoine");
-            Debug.Log("name:"+_name);
-            Debug.Log("gold :"+_gold);
-        }
-    }
-
     public void AddCard(Card newCard)
     {
         _cards.Add(newCard);
@@ -65,5 +84,44 @@ public class Player : MonoBehaviour
     {
         _currentSquare = newPos;
         transform.position = _currentSquare.transform.position;
+
+        // @Upgrade : add the speed amount
+    }
+
+    public void BeginGameTurn()
+    {
+        Debug.Log("Begin game turn on : " + name);
+        _playerTurn = false;
+        _currentHero.ResetHero();
+    }
+
+    public void BeginPlayerTurn()
+    {
+        Debug.Log("Begin player turn : " + name);
+        _playerTurn = true;
+        SetSelected(true);
+    }
+
+    public void EndPlayerTurn()
+    {
+        _playerTurn = false;
+        SetSelected(false);
+    }
+
+    public Hero GetHero()
+    {
+        return _currentHero;
+    }
+
+    public void SetSelected(bool newSelection)
+    {
+        if(newSelection)
+        {
+            transform.GetChild(0).GetComponent<MeshRenderer>().material = selected;
+        }
+        else
+        {
+            transform.GetChild(0).GetComponent<MeshRenderer>().material = unselected;
+        }
     }
 }
